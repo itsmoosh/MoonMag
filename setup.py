@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='MoonMag',
-    version='1.6.0',
+    version='1.7.1',
     author='Marshall J. Styczinski',
     author_email='marshall.styczinski@bmsis.org',
     description='Magnetic induction calculations for sounding of icy moons',
@@ -21,12 +21,11 @@ setup(
     packages=['MoonMag'],
     package_dir={'MoonMag': 'MoonMag'},
     install_requires=[
-        'numpy >= 1.24.2',
-        'scipy >= 1.10.1',
-        'mpmath >= 1.2.1',
-        'matplotlib >= 3.7.1',
-        'spiceypy >= 5.1.2',
-        'healpy'
+        'numpy >= 1.26.3',
+        'scipy >= 1.11.4',
+        'mpmath >= 1.3.0',
+        'matplotlib >= 3.8.2',
+        'spiceypy >= 6.0.0'
     ],
     include_package_data=True  # Files to include are listed in MANIFEST.in
 )

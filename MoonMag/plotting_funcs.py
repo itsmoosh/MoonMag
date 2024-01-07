@@ -13,8 +13,6 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdt
 import matplotlib.ticker as tick
 from matplotlib.gridspec import GridSpec
-from healpy.projector import CartesianProj
-from healpy.pixelfunc import vec2pix
 
 from MoonMag import _interior
 from MoonMag.config import *
@@ -1306,6 +1304,10 @@ def SetMap(ax):
     return
 
 def healpixMap(nside, map, title, fName, levels=None, cmap=None, FIELD=True):
+    """ This function requires additional imports and is currently intended only for testing
+        and validation purposes. """
+    from healpy.projector import CartesianProj
+    from healpy.pixelfunc import vec2pix
     from PlanetProfile.GetConfig import FigLbl, FigSize, FigMisc
 
     lonMap_deg, latMap_deg, lon_min, lon_max, _, _, nLonMap, nLatMap, _, _, _, _, _, _ = get_latlon(False)
