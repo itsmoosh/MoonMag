@@ -56,7 +56,7 @@ def printHealpixLocs(fName='healpix_locs.txt', outDir='outDir', nside=2**6):
 
 if __name__ == '__main__':
 
-    nside = 2**6
+    nside = 2**8
     outDir = 'outData'
     fName = 'healpix_locs.txt'
 
