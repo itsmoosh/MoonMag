@@ -49,8 +49,8 @@ localt = 0  # km altitude for plotting a time series
 prevEuropa = 'prev'
 TobieHigh = 'Tobie_high'
 TobieLow = 'Tobie_low'
-CochraneBestFit = 'Cochrane_best'
-CochraneLikely = 'Cochrane_likely'
+CochraneC3C9 = 'Cochrane_C3C9only'
+CochraneAll = 'Cochrane_all'
 DO_LARGE = 'large'
 DO_GIF = 'do_gif'
 
@@ -118,4 +118,3 @@ logging.getLogger('PIL').setLevel(logging.WARNING)
 if use_latex and not shutil.which('latex'):
     log.warning('A LaTeX installation was not found. LaTeX will not be used for plot labels.')
     use_latex = False
-

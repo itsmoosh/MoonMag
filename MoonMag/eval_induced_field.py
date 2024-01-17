@@ -12,14 +12,14 @@ from collections.abc import Iterable
 
 import spiceypy as spice
 
-from MoonMag import _excitation
+from MoonMag import _interior, _induced, _excitation
 from MoonMag.config import *
 import MoonMag.symmetry_funcs as sym
 import MoonMag.asymmetry_funcs as asym
 import MoonMag.plotting_funcs as plots
 
 def run_calcs(bname, comp, recalc, plot_field, plot_asym, synodic_only=False,
-              inp_path=None, inp_Bi_path=None, eval_r=None,
+              inp_model_path=None, inp_Bi_path=None, inp_Be_path=None, eval_r=None,
               timePair=None, CAmarks=None, modelOpts=None):
 
     if eval_r is None:
@@ -48,10 +48,10 @@ def run_calcs(bname, comp, recalc, plot_field, plot_asym, synodic_only=False,
         bin_name = f"{bname}_"
 
     # IO file paths
-    if inp_path is None:
-        inp_path = os.path.join("MoonMag", "interior")
+    if inp_model_path is None:
+        inp_model_path = _interior
     if inp_Bi_path is None:
-        inp_Bi_path = os.path.join("MoonMag", "induced")
+        inp_Bi_path = _induced
 
     # p_max is highest degree in boundary shapes to use
     # bname_opt is a string to append to filenames to identify special cases
@@ -78,14 +78,14 @@ def run_calcs(bname, comp, recalc, plot_field, plot_asym, synodic_only=False,
             eval_r = 1.016  # 25 km altitude, the planned CA for some Clipper flybys
     elif bname == "Callisto":
         p_max_main = 2
-        if CochraneBestFit in modelOpts or CochraneLikely in modelOpts:
-            Benm_model = 'Cochrane'
+        if CochraneC3C9 in modelOpts or CochraneAll in modelOpts:
+            Benm_model = 'Cochrane2024'
             if timePair is not None:
                 flyby_opt = timePair[0]
-            if CochraneBestFit in modelOpts:
-                bname_opt = '_inverted'
+            if CochraneC3C9 in modelOpts:
+                bname_opt = f'_{CochraneC3C9}'
             else:
-                bname_opt = '_likely'
+                bname_opt = f'_{CochraneAll}'
 
     if 'surface' in modelOpts:
         eval_r = 1.0
@@ -167,7 +167,7 @@ def run_calcs(bname, comp, recalc, plot_field, plot_asym, synodic_only=False,
         asym.print_Xi_table(nprm_max_main, p_max_main, n_max_main)
 
     if recalc:
-        int_model = os.path.join(inp_path, f"interior_model_asym{bfname}{bname_opt}.txt")
+        int_model = os.path.join(inp_model_path, f"interior_model_asym{bfname}{bname_opt}.txt")
         log.debug(f"Using interior model: {int_model}")
 
         r_bds, sigmas, bcdev = np.loadtxt(int_model, skiprows=1, unpack=True, delimiter=',')
@@ -179,13 +179,14 @@ def run_calcs(bname, comp, recalc, plot_field, plot_asym, synodic_only=False,
             single_asym = None
         else:
             single_asym = r_io
-        asym_shape, grav_shape = asym.read_shape(n_bds, p_max_main, rscale_asym, bodyname=bname, relative=relative, single_asym=single_asym,
+        asym_shape, grav_shape = asym.read_shape(n_bds, p_max_main, rscale_asym, bodyname=bname, relative=relative, single_asym=single_asym, fpath=inp_model_path,
                                      eps_scaled=eps_scaled, r_bds=r_bds, r_io=r_io, append=bname_opt+flyby_opt, convert_depth_to_chipq=convert_depth_to_chipq)
         r_bds, sigmas, asym_shape = asym.validate(r_bds, sigmas, bcdev, asym_shape, p_max_main)
 
         # Read in Benm info
         if plot_field:
-            peak_periods, Benm, B0, exc_names = asym.read_Benm(nprm_max_main, p_max_main, bodyname=bname, synodic=synodic_only, orbital=False, model=Benm_model)
+            peak_periods, Benm, B0, exc_names = asym.read_Benm(nprm_max_main, p_max_main, bodyname=bname, synodic=synodic_only, 
+                                                               orbital=False, model=Benm_model, fName=inp_Be_path, fpath=inp_model_path)
             peak_omegas = 2*np.pi/(peak_periods*3600)
             if not isinstance(peak_omegas, Iterable):
                 peak_periods = [peak_periods]
@@ -380,8 +381,8 @@ def run_calcs(bname, comp, recalc, plot_field, plot_asym, synodic_only=False,
                                and (prevEuropa in modelOpts or TobieLow in modelOpts or TobieHigh in modelOpts)
         if (sub_planet_vert and actually_plot_traces) and not output_Schmidt:
             if not recalc:
-                peak_periods, Benm, B0, exc_names = asym.read_Benm(nprm_max_main, p_max_main, bodyname=bname, synodic=synodic_only, model=Benm_model)
-                int_model = os.path.join(inp_path, f"interior_model_asym{bfname}{bname_opt}{flyby_opt}.txt")
+                peak_periods, Benm, B0, exc_names = asym.read_Benm(nprm_max_main, p_max_main, bodyname=bname, synodic=synodic_only, model=Benm_model, fname=inp_Be_path)
+                int_model = os.path.join(inp_model_path, f"interior_model_asym{bfname}{bname_opt}{flyby_opt}.txt")
                 r_bds, sigmas, bcdev = np.loadtxt(int_model, skiprows=1, unpack=True, delimiter=',')
 
             t_cut = vert_cut_hr * 3600
@@ -403,7 +404,7 @@ def run_calcs(bname, comp, recalc, plot_field, plot_asym, synodic_only=False,
                 synodic_period, Benm, B0, exc_names = asym.read_Benm(nprm_max_main, p_max_main, bodyname=bname, synodic=True)
                 peak_periods = [synodic_period]
             if not sub_planet_vert:
-                int_model = os.path.join(inp_path, f"interior_model_asym{bfname}{bname_opt}{flyby_opt}.txt")
+                int_model = os.path.join(inp_model_path, f"interior_model_asym{bfname}{bname_opt}{flyby_opt}.txt")
                 r_bds, sigmas, bcdev = np.loadtxt(int_model, skiprows=1, unpack=True, delimiter=',')
 
             r = (localt + R) / R
