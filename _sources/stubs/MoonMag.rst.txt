@@ -1,13 +1,9 @@
-MoonMag package
-===============
 
 .. automodule:: MoonMag
    :members:
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
 
 .. toctree::
    :maxdepth: 4
