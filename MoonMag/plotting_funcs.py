@@ -875,7 +875,7 @@ def plotTimeSeries(loc, Binm, Benm, t_start, T_hrs, nprm_max, n_max, nvals, mval
     fig_fname = os.path.join(fpath, f"{bodyname}_tSeries{append}")
     fig.savefig(f"{fig_fname}.{fmt}", format=fmt, dpi=lfig_dpi)
     plt.close()
-    log.info(f"Time series plot saved to file: {fig_fname}")
+    log.info(f"Time series plot saved to file: {fig_fname}.{fmt}")
     return
 
 #############################################
@@ -1336,5 +1336,5 @@ def healpixMap(nside, map, title, fName, levels=None, cmap=None, FIELD=True):
     FigMisc.SetLatex()  # Shouldn't be necessary but rcParams seem to not be getting set
     plt.tight_layout()
     fig.savefig(fName, bbox_inches='tight', format='pdf', dpi=FigMisc.dpi, metadata=FigLbl.meta)
-    log.debug(f'Map figure saved to file: {fName}')
+    log.debug(f'Map figure saved to file: {fName}.pdf')
     plt.close()

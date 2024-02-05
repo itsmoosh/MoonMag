@@ -559,7 +559,7 @@ def ydx(n,x):
 """
 read_Benm()
     Read in the complex frequency spectrum of excitation field oscillations for the strongest excitations.
-    Usage: `peak_periods`, `Benm`, `B0`, `exc_names` = read_Benm(`nprm_max`, `p_max`, `bodyname=None`, `fpath=None`, `synodic=False`, `orbital=False`)
+    Usage: `peak_periods`, `Benm`, `B0`, `exc_names`, 'Bexyz' = read_Benm(`nprm_max`, `p_max`, `bodyname=None`, `fpath=None`, `synodic=False`, `orbital=False`)
     Returns:
         peak_periods: float, shape(n_peaks). Periods in hr of peak oscillations. Values read from files are assumed to be in hr.
         Benm: complex, shape(n_peaks,2,nprm_max+p_max+1,nprm_max+p_max+1). Excitation moments for each period in nT.
@@ -648,7 +648,7 @@ def read_Benm(nprm_max, p_max, bodyname=None, fpath=None, synodic=False, orbital
         
     n_peaks1 = np.size(peak_per1)
 
-    Benm1 = np.zeros((n_peaks1,2,nprm_max+p_max+1,nprm_max+p_max+1),dtype=np.complex_)
+    Benm1 = np.zeros((n_peaks1,2,nprm_max+p_max+1,nprm_max+p_max+1), dtype=np.complex_)
 
     A1 = sqrt(2*np.pi/3)
 
@@ -658,6 +658,9 @@ def read_Benm(nprm_max, p_max, bodyname=None, fpath=None, synodic=False, orbital
 
     # Get static background field
     B0 = np.array([np.mean(B0x), np.mean(B0y), np.mean(B0z)])
+
+    # Collect Bexyz to return for convenience
+    Bexyz = (Bex, Bey, Bez)
     
     if nprm_max > 1:
         log.warning("n'=2 excitation moments are being considered, but the amplitudes are just a placeholder! Remove this warning when correct Be2xyz have been installed.")
@@ -703,7 +706,7 @@ def read_Benm(nprm_max, p_max, bodyname=None, fpath=None, synodic=False, orbital
         peak_periods = peak_per1
         exc_names = exc1_names
 
-    return peak_periods, Benm, B0, exc_names
+    return peak_periods, Benm, B0, exc_names, Bexyz
 
 #############################################
 
