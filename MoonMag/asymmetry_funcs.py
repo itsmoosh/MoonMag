@@ -633,9 +633,7 @@ def read_Benm(nprm_max, p_max, bodyname=None, fpath=None, synodic=False, orbital
             if limit_osc < 0: limit_osc = abs(limit_osc)
             log.debug(f"Limiting Benm to strongest {limit_osc} oscillations.")
     absBenm = np.sqrt(Bex_Re**2 + Bex_Im**2 + Bey_Re**2 + Bey_Im**2 + Bez_Re**2 + Bez_Im**2)
-    if synodic or orbital:
-        iMaxSort = 0
-    else:
+    if np.size(absBenm) > 1:
         iMax = np.argpartition(absBenm, -limit_osc)[-limit_osc:]
         peak_per1_lim = np.sort(peak_per1[iMax])
         iMaxSort = np.array([np.argwhere(peak_per1 == peak_per1_lim[i]) for i in range(np.size(peak_per1_lim))]).flatten()
