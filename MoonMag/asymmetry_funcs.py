@@ -704,6 +704,9 @@ def read_Benm(nprm_max, p_max, bodyname=None, fpath=None, synodic=False, orbital
         peak_periods = peak_per1
         exc_names = exc1_names
 
+    if n_peaks1 == 1:
+        peak_periods = np.array([peak_periods])
+
     return peak_periods, Benm, B0, exc_names, Bexyz
 
 #############################################
